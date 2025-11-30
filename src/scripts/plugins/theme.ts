@@ -39,6 +39,25 @@ export function registerThemePlugin(app: TerminalApp, themeManager: ThemeManager
           app.printLine(`Unknown subcommand: ${subcommand}`, 'error');
           app.printLine('Type "theme" for usage.', 'hint');
       }
+    },
+    // Autocomplete handler
+    (args: string[], _currentWord: string, _app: TerminalApp) => {
+      const subcommands = ['list', 'current', 'set'];
+      
+      // If no args yet, suggest subcommands
+      if (args.length === 0) {
+        return subcommands;
+      }
+      
+      const subcommand = args[0].toLowerCase();
+      
+      // If typing 'set', suggest theme names
+      if (subcommand === 'set' && args.length === 1) {
+        const themes = themeManager.getThemes();
+        return themes.map(t => t.name);
+      }
+      
+      return [];
     }
   );
 }

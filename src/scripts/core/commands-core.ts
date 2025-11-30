@@ -22,6 +22,11 @@ export function registerCoreCommands(app: TerminalApp): void {
       });
 
       app.printLine('');
+    },
+    // Autocomplete handler - suggest command names
+    (_args: string[], _currentWord: string, app: TerminalApp) => {
+      const commands = app.getCommands();
+      return commands.map(cmd => cmd.name);
     }
   );
 
