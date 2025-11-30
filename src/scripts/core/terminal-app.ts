@@ -100,6 +100,25 @@ export class TerminalApp {
   }
 
   /**
+   * Enable user input
+   */
+  public enableInput(): void {
+    if (this.inputElement) {
+      this.inputElement.disabled = false;
+      this.inputElement.focus();
+    }
+  }
+
+  /**
+   * Disable user input
+   */
+  public disableInput(): void {
+    if (this.inputElement) {
+      this.inputElement.disabled = true;
+    }
+  }
+
+  /**
    * Handle keyboard input
    */
   private handleKeyDown(event: KeyboardEvent): void {

@@ -1,11 +1,21 @@
-// Color palette
-$color-phosphor: #00ff41;
-$color-phosphor-dim: #00aa2b;
-$color-background: #000000;
+// Default theme colors (Green Phosphor)
+// These can be overridden by CSS custom properties at runtime
+:root {
+  --color-phosphor: #00ff41;
+  --color-phosphor-dim: #00aa2b;
+  --color-background: #000000;
+  --color-error: #ff3333;
+  --color-hint: #00cc38;
+}
+
+// SCSS variables for use in stylesheets
+$color-phosphor: var(--color-phosphor);
+$color-phosphor-dim: var(--color-phosphor-dim);
+$color-background: var(--color-background);
 $color-text-primary: $color-phosphor;
 $color-text-secondary: $color-phosphor-dim;
-$color-error: #ff3333;
-$color-hint: #00cc38;
+$color-error: var(--color-error);
+$color-hint: var(--color-hint);
 
 // CRT effects
 $glow-radius: 2px;

@@ -1,4 +1,5 @@
 import { TerminalApp } from './terminal-app';
+import { runBootSequence } from './boot-sequence';
 
 /**
  * Register core built-in commands
@@ -65,6 +66,15 @@ export function registerCoreCommands(app: TerminalApp): void {
     'Echo text to the terminal',
     (args: string[], app: TerminalApp) => {
       app.printLine(args.join(' '));
+    }
+  );
+
+  // boot command
+  app.registerCommand(
+    'boot',
+    'Replay the boot sequence',
+    async (_args: string[], app: TerminalApp) => {
+      await runBootSequence(app);
     }
   );
 }
