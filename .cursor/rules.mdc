@@ -1,0 +1,147 @@
+# Retro Micro-OS — Cursor Rules
+
+These rules define how Cursor should behave when generating or modifying code for this project.
+Focus: **clean architecture**, **modularity**, **web standards**, **reusable components**, and **no duplicated code**.
+
+---
+
+## 1. General Principles
+
+- Code must be clean, modular, and readable.
+- Follow modern web standards and TypeScript best practices.
+- Avoid unnecessary dependencies or complexity.
+- Maintain consistent folder structure.
+- Plugins must not manipulate the DOM directly.
+
+---
+
+## 2. Architecture Constraints
+
+### Core vs Plugins
+- Core logic: `/src/scripts/core`
+- Plugins: `/src/scripts/plugins`
+- Core does not depend on plugins.
+- Plugins must use `TerminalApp` API for output/input.
+- Plugins must not maintain global state.
+
+### Command Format
+Commands must be registered as:
+
+```ts
+app.registerCommand(name, description, handler);
+```
+
+---
+
+## 3. Reusability Rules
+
+### Prevent Duplicate Code
+Cursor must:
+- Reuse existing utilities
+- Reuse the same modal/input components
+- Avoid repeating parsing logic
+- Factor out repeated helpers
+
+### Single Input Component
+- Only one terminal input exists.
+- New UI interactions must use reusable modal (if introduced).
+
+### Single Modal System (if needed)
+- Implemented in `/core/ui/modal.ts`
+- All plugins use the same modal
+
+---
+
+## 4. Styling Rules
+
+- SCSS variables for colors and spacing.
+- One SCSS entry: `/styles/main.scss`
+- Themes implemented via CSS classes, not duplicate styles.
+
+---
+
+## 5. TypeScript Rules
+
+- No `any` unless unavoidable.
+- Prefer small, composable interfaces.
+- Keep public API types stable.
+- Avoid complex generics unless needed.
+
+---
+
+## 6. Webpack Rules
+
+- Minimal Webpack config.
+- No Babel unless explicitly requested.
+- No code splitting unless requested.
+- No polyfill injection unless required.
+
+---
+
+## 7. Naming Conventions
+
+- Files: kebab-case.ts
+- Classes: PascalCase
+- Variables & functions: camelCase
+- Plugins use naming pattern:
+  ```
+  register<PluginName>Commands()
+  ```
+
+---
+
+## 8. Folder Structure Rules
+
+Cursor must follow:
+
+```text
+/src
+  index.html
+  /styles
+    main.scss
+    _variables.scss
+  /scripts
+    main.ts
+    /core
+      terminal-app.ts
+      commands-core.ts
+    /plugins
+      *.ts
+```
+
+Do not add extra root folders without instruction.
+
+---
+
+## 9. Code Quality
+
+- Short, focused functions.
+- Avoid side effects.
+- Prefer early returns.
+- Add comments for non-obvious logic.
+- Avoid large monolithic files.
+- Keep architecture simple and predictable.
+
+---
+
+## 10. Cursor Interaction Rules
+
+When user asks for features:
+- Insert code in correct file.
+- Extend existing modules instead of duplicating functionality.
+- Keep plugin boundary clean.
+
+Never:
+- Introduce frameworks
+- Duplicate the terminal input
+- Duplicate modal implementations
+- Add unnecessary dependencies
+
+---
+
+## 11. Long-Term Vision
+
+Cursor must help maintain:
+- A clean, extensible, plugin-driven micro-OS
+- A minimal but powerful command environment
+- Reusable components and coherent architecture
