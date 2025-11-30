@@ -5,7 +5,7 @@ import type { ManPageRegistry } from '../core/man-registry';
 /**
  * Editor mode type
  */
-type EditorMode = 'normal' | 'insert';
+type EditorMode = 'normal' | 'insert' | 'command';
 
 /**
  * Text Editor
@@ -26,6 +26,8 @@ export class TextEditor {
   // DOM elements
   private container: HTMLElement | null = null;
   private contentElement: HTMLElement | null = null;
+  private commandLineElement: HTMLElement | null = null;
+  private commandInputElement: HTMLInputElement | null = null;
   
   // Event handler bound to this instance
   private boundKeyHandler: ((e: KeyboardEvent) => void) | null = null;
@@ -48,6 +50,10 @@ export class TextEditor {
         <span class="editor-modified" id="editor-modified"></span>
       </div>
       <div class="editor-content" id="editor-content"></div>
+      <div class="editor-command-line" id="editor-command-line">
+        <span class="command-prompt">:</span>
+        <input type="text" id="editor-command-input" autocomplete="off" spellcheck="false" />
+      </div>
       <div class="editor-status">
         <span class="editor-mode" id="editor-mode">-- NORMAL --</span>
         <span class="editor-position" id="editor-position">1,1</span>
@@ -55,8 +61,10 @@ export class TextEditor {
     `;
     document.body.appendChild(this.container);
 
-    // Get reference to content element
+    // Get references to elements
     this.contentElement = document.getElementById('editor-content');
+    this.commandLineElement = document.getElementById('editor-command-line');
+    this.commandInputElement = document.getElementById('editor-command-input') as HTMLInputElement;
   }
 
   /**
@@ -173,7 +181,11 @@ export class TextEditor {
     const positionEl = document.getElementById('editor-position');
 
     if (modeEl) {
-      modeEl.textContent = `-- ${this.mode.toUpperCase()} --`;
+      if (this.mode === 'command') {
+        modeEl.textContent = '';  // Hide mode in command mode
+      } else {
+        modeEl.textContent = `-- ${this.mode.toUpperCase()} --`;
+      }
     }
 
     if (positionEl) {
@@ -212,7 +224,13 @@ export class TextEditor {
    * Main keyboard event handler
    */
   private handleKeyDown(e: KeyboardEvent): void {
-    // Always prevent default to avoid browser shortcuts
+    // Don't intercept if we're in command mode and focus is on command input
+    if (this.mode === 'command' && document.activeElement === this.commandInputElement) {
+      this.handleCommandInput(e);
+      return;
+    }
+
+    // Always prevent default for other modes
     e.preventDefault();
 
     if (this.mode === 'normal') {
@@ -271,7 +289,7 @@ export class TextEditor {
 
       // Command mode
       case ':':
-        this.handleCommandMode();
+        this.enterCommandMode();
         break;
     }
   }
@@ -335,13 +353,71 @@ export class TextEditor {
   }
 
   /**
-   * Handle command mode (: commands)
+   * Enter command mode
    */
-  private handleCommandMode(): void {
-    const cmd = prompt(':');
-    if (!cmd) return;
+  private enterCommandMode(): void {
+    this.mode = 'command';
+    
+    // Show command line
+    if (this.commandLineElement) {
+      this.commandLineElement.classList.add('active');
+    }
+    
+    // Clear and focus command input
+    if (this.commandInputElement) {
+      this.commandInputElement.value = '';
+      this.commandInputElement.focus();
+    }
+    
+    this.render();
+  }
 
-    const parts = cmd.trim().split(/\s+/);
+  /**
+   * Exit command mode
+   */
+  private exitCommandMode(): void {
+    this.mode = 'normal';
+    
+    // Hide command line
+    if (this.commandLineElement) {
+      this.commandLineElement.classList.remove('active');
+    }
+    
+    // Clear command input
+    if (this.commandInputElement) {
+      this.commandInputElement.value = '';
+    }
+    
+    this.render();
+  }
+
+  /**
+   * Handle keyboard input in command mode
+   */
+  private handleCommandInput(e: KeyboardEvent): void {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      this.executeCommand();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      this.exitCommandMode();
+    }
+    // Let other keys work naturally in the input field
+  }
+
+  /**
+   * Execute the command from command input
+   */
+  private executeCommand(): void {
+    if (!this.commandInputElement) return;
+
+    const cmd = this.commandInputElement.value.trim();
+    if (!cmd) {
+      this.exitCommandMode();
+      return;
+    }
+
+    const parts = cmd.split(/\s+/);
     const command = parts[0];
     const arg = parts[1] || null;
 
@@ -349,13 +425,17 @@ export class TextEditor {
       case 'w':
         // Save file
         this.saveFile(arg);
+        this.exitCommandMode();
         break;
 
       case 'q':
         // Quit
         if (this.modified) {
-          const confirm = window.confirm('File has unsaved changes. Quit anyway?');
-          if (!confirm) return;
+          const confirmed = window.confirm('File has unsaved changes. Quit anyway?');
+          if (!confirmed) {
+            this.exitCommandMode();
+            return;
+          }
         }
         this.close();
         break;
@@ -364,6 +444,8 @@ export class TextEditor {
         // Save and quit
         if (this.saveFile(arg)) {
           this.close();
+        } else {
+          this.exitCommandMode();
         }
         break;
 
@@ -373,7 +455,9 @@ export class TextEditor {
         break;
 
       default:
+        // Show error message in the status
         alert(`Unknown command: ${command}`);
+        this.exitCommandMode();
     }
   }
 
