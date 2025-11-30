@@ -1,3 +1,5 @@
+import type { SoundManager } from './sound-manager';
+
 /**
  * Command handler function signature
  */
@@ -30,6 +32,11 @@ export class TerminalApp {
   private outputElement: HTMLElement | null = null;
   private inputElement: HTMLInputElement | null = null;
   private promptElement: HTMLElement | null = null;
+  private soundManager: SoundManager | null = null;
+
+  constructor(soundManager?: SoundManager) {
+    this.soundManager = soundManager || null;
+  }
 
   /**
    * Initialize the terminal application
@@ -80,6 +87,13 @@ export class TerminalApp {
     line.className = 'terminal-line';
     if (className) {
       line.classList.add(className);
+      
+      // Trigger sounds based on className
+      if (this.soundManager) {
+        if (className === 'error') {
+          this.soundManager.playError();
+        }
+      }
     }
     line.textContent = text;
     this.outputElement.appendChild(line);
@@ -109,6 +123,13 @@ export class TerminalApp {
    */
   public getHistory(): string[] {
     return [...this.history];
+  }
+
+  /**
+   * Get sound manager
+   */
+  public getSoundManager(): SoundManager | null {
+    return this.soundManager;
   }
 
   /**

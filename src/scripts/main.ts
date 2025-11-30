@@ -4,6 +4,8 @@ import { registerCoreCommands } from './core/commands-core';
 import { registerSysInfoPlugin } from './plugins/sysinfo';
 import { ThemeManager } from './core/theme-manager';
 import { registerThemePlugin } from './plugins/theme';
+import { SoundManager } from './core/sound-manager';
+import { registerSoundPlugin } from './plugins/sound';
 import { runBootSequence } from './core/boot-sequence';
 
 /**
@@ -13,8 +15,11 @@ async function init(): Promise<void> {
   // Create theme manager and load saved theme
   const themeManager = new ThemeManager();
   
-  // Create terminal app
-  const app = new TerminalApp();
+  // Create sound manager
+  const soundManager = new SoundManager();
+  
+  // Create terminal app with sound manager
+  const app = new TerminalApp(soundManager);
   
   // Register core commands
   registerCoreCommands(app);
@@ -22,6 +27,7 @@ async function init(): Promise<void> {
   // Register plugins
   registerSysInfoPlugin(app);
   registerThemePlugin(app, themeManager);
+  registerSoundPlugin(app, soundManager);
   
   // Initialize terminal
   app.init();
