@@ -1,0 +1,211 @@
+@use 'variables' as *;
+
+// Global reset
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+// Body and HTML
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: $font-family-mono;
+  font-size: $font-size-base;
+  line-height: $line-height;
+  background: $color-background;
+  color: $color-text-primary;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Terminal container
+#terminal-container {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  background: $color-background;
+  display: flex;
+  flex-direction: column;
+  padding: $terminal-padding;
+  
+  // CRT screen effect
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(18, 16, 16, 0) 50%,
+      rgba(0, 0, 0, $scanline-opacity) 50%
+    );
+    background-size: 100% $scanline-height;
+    pointer-events: none;
+    z-index: 10;
+  }
+}
+
+// Terminal output area
+#terminal-output {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-bottom: $spacing-md;
+  
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba($color-phosphor, 0.05);
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba($color-phosphor, 0.3);
+    border-radius: 4px;
+    
+    &:hover {
+      background: rgba($color-phosphor, 0.5);
+    }
+  }
+}
+
+// Terminal lines
+.terminal-line {
+  margin-bottom: $spacing-xs;
+  text-shadow: 0 0 $glow-radius $color-phosphor;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  
+  &.command-echo {
+    color: $color-text-primary;
+    margin-bottom: $spacing-sm;
+  }
+  
+  &.error {
+    color: $color-error;
+    text-shadow: 0 0 $glow-radius $color-error;
+  }
+  
+  &.hint {
+    color: $color-hint;
+    opacity: 0.8;
+  }
+  
+  &.section-header {
+    font-weight: bold;
+    color: $color-text-primary;
+  }
+}
+
+// Terminal prompt area
+#terminal-prompt {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  
+  .prompt-symbol {
+    color: $color-text-primary;
+    text-shadow: 0 0 $glow-radius $color-phosphor;
+    user-select: none;
+  }
+}
+
+// Terminal input
+#terminal-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: $color-text-primary;
+  font-family: $font-family-mono;
+  font-size: $font-size-base;
+  text-shadow: 0 0 $glow-radius $color-phosphor;
+  caret-color: $color-text-primary;
+  
+  // Blinking cursor
+  &::selection {
+    background: rgba($color-phosphor, 0.3);
+  }
+}
+
+// Cursor blink animation
+@keyframes cursor-blink {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+// CRT flicker effect (subtle)
+@keyframes crt-flicker {
+  0% {
+    opacity: 0.97;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.97;
+  }
+}
+
+#terminal-container {
+  animation: crt-flicker 0.15s infinite alternate;
+}
+
+// Screen glow effect
+#terminal-container {
+  box-shadow: inset 0 0 100px rgba($color-phosphor, 0.05);
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(
+      ellipse at center,
+      rgba($color-phosphor, 0.02) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+// Content should be above effects
+#terminal-output,
+#terminal-prompt {
+  position: relative;
+  z-index: 5;
+}
+
+// Welcome message styling
+.welcome-message {
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  
+  .title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: $spacing-sm;
+  }
+  
+  .subtitle {
+    color: $color-text-secondary;
+    opacity: 0.8;
+  }
+}
+

@@ -1,0 +1,33 @@
+// Color palette
+$color-phosphor: #00ff41;
+$color-phosphor-dim: #00aa2b;
+$color-background: #000000;
+$color-text-primary: $color-phosphor;
+$color-text-secondary: $color-phosphor-dim;
+$color-error: #ff3333;
+$color-hint: #00cc38;
+
+// CRT effects
+$glow-radius: 2px;
+$scanline-opacity: 0.05;
+$scanline-height: 2px;
+
+// Typography
+$font-family-mono: 'Courier New', 'Consolas', 'Monaco', 'Lucida Console', monospace;
+$font-size-base: 16px;
+$line-height: 1.5;
+
+// Spacing
+$spacing-xs: 0.25rem;
+$spacing-sm: 0.5rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+
+// Layout
+$terminal-padding: 20px;
+$terminal-border-radius: 0;
+
+// Animation
+$cursor-blink-speed: 1s;
+
