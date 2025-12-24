@@ -360,6 +360,17 @@ body {
       font-weight: bold;
     }
 
+    .editor-message {
+      flex: 1;
+      text-align: center;
+      color: $color-text-primary;
+      
+      &.error {
+        color: $color-error;
+        text-shadow: 0 0 $glow-radius $color-error;
+      }
+    }
+
     .editor-position {
       opacity: 0.8;
     }

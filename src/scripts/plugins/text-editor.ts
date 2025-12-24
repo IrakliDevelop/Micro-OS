@@ -28,9 +28,13 @@ export class TextEditor {
   private contentElement: HTMLElement | null = null;
   private commandLineElement: HTMLElement | null = null;
   private commandInputElement: HTMLInputElement | null = null;
+  private statusMessageElement: HTMLElement | null = null;
   
   // Event handler bound to this instance
   private boundKeyHandler: ((e: KeyboardEvent) => void) | null = null;
+  
+  // Message timeout handle
+  private messageTimeout: ReturnType<typeof setTimeout> | null = null;
 
   constructor(app: TerminalApp, fileSystem: FileSystem) {
     this.app = app;
@@ -56,6 +60,7 @@ export class TextEditor {
       </div>
       <div class="editor-status">
         <span class="editor-mode" id="editor-mode">-- NORMAL --</span>
+        <span class="editor-message" id="editor-message"></span>
         <span class="editor-position" id="editor-position">1,1</span>
       </div>
     `;
@@ -65,6 +70,7 @@ export class TextEditor {
     this.contentElement = document.getElementById('editor-content');
     this.commandLineElement = document.getElementById('editor-command-line');
     this.commandInputElement = document.getElementById('editor-command-input') as HTMLInputElement;
+    this.statusMessageElement = document.getElementById('editor-message');
   }
 
   /**
@@ -114,6 +120,8 @@ export class TextEditor {
    * Close the editor
    */
   public close(): void {
+    this.clearMessage();
+    
     if (this.container) {
       this.container.classList.remove('active');
     }
@@ -190,6 +198,46 @@ export class TextEditor {
 
     if (positionEl) {
       positionEl.textContent = `${this.cursorY + 1},${this.cursorX + 1}`;
+    }
+  }
+
+  /**
+   * Show a message in the status bar
+   * @param message The message to display
+   * @param isError Whether this is an error message (for styling)
+   * @param duration How long to show the message in ms (0 = indefinite)
+   */
+  private showMessage(message: string, isError: boolean = false, duration: number = 3000): void {
+    if (!this.statusMessageElement) return;
+    
+    // Clear any existing timeout
+    if (this.messageTimeout) {
+      clearTimeout(this.messageTimeout);
+      this.messageTimeout = null;
+    }
+    
+    // Set the message
+    this.statusMessageElement.textContent = message;
+    this.statusMessageElement.classList.toggle('error', isError);
+    
+    if (duration > 0) {
+      this.messageTimeout = setTimeout(() => {
+        this.clearMessage();
+      }, duration);
+    }
+  }
+
+  /**
+   * Clear the status message
+   */
+  private clearMessage(): void {
+    if (this.statusMessageElement) {
+      this.statusMessageElement.textContent = '';
+      this.statusMessageElement.classList.remove('error');
+    }
+    if (this.messageTimeout) {
+      clearTimeout(this.messageTimeout);
+      this.messageTimeout = null;
     }
   }
 
@@ -358,6 +406,9 @@ export class TextEditor {
   private enterCommandMode(): void {
     this.mode = 'command';
     
+    // Clear any status messages
+    this.clearMessage();
+    
     // Show command line
     if (this.commandLineElement) {
       this.commandLineElement.classList.add('active');
@@ -429,13 +480,11 @@ export class TextEditor {
         break;
 
       case 'q':
-        // Quit
+        // Quit (only if no unsaved changes)
         if (this.modified) {
-          const confirmed = window.confirm('File has unsaved changes. Quit anyway?');
-          if (!confirmed) {
-            this.exitCommandMode();
-            return;
-          }
+          this.showMessage('No write since last change (use :q! to override)', true, 0);
+          this.exitCommandMode();
+          return;
         }
         this.close();
         break;
@@ -455,8 +504,8 @@ export class TextEditor {
         break;
 
       default:
-        // Show error message in the status
-        alert(`Unknown command: ${command}`);
+        // Show error message in the status bar
+        this.showMessage(`Not an editor command: ${command}`, true);
         this.exitCommandMode();
     }
   }
@@ -469,7 +518,7 @@ export class TextEditor {
     const targetFilename = newFilename || this.filename;
 
     if (!targetFilename) {
-      alert('No filename specified. Use :w filename');
+      this.showMessage('No file name. Use :w filename', true);
       return false;
     }
 
@@ -480,10 +529,11 @@ export class TextEditor {
       this.filename = targetFilename;
       this.modified = false;
       
-      this.app.printLine(`"${targetFilename}" written (${content.length} characters)`);
+      // Show success message in status bar
+      this.showMessage(`"${targetFilename}" written, ${content.length} characters`);
       return true;
     } catch (error) {
-      alert(`Error saving file: ${error}`);
+      this.showMessage(`Error saving file: ${error}`, true);
       return false;
     }
   }

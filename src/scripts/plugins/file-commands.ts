@@ -95,9 +95,9 @@ export function registerFileCommands(
     'Remove files',
     (args: string[], app: TerminalApp) => {
       if (args.length === 0) {
-        app.printLine('Usage: rm [-f] <filename>', 'error');
+        app.printLine('Usage: rm <filename>', 'error');
         app.printLine('Remove a file from the virtual file system.', 'hint');
-        app.printLine('  -f    Force removal without confirmation', 'hint');
+        app.printLine('Use "rm -f <filename>" to skip confirmation.', 'hint');
         return;
       }
 
@@ -106,7 +106,7 @@ export function registerFileCommands(
       const filename = hasForceFlag ? args[1] : args[0];
 
       if (!filename) {
-        app.printLine('Usage: rm [-f] <filename>', 'error');
+        app.printLine('Usage: rm <filename>', 'error');
         return;
       }
 
@@ -116,13 +116,10 @@ export function registerFileCommands(
         return;
       }
 
-      // Confirm deletion unless force flag is used
+      // Require confirmation via -f flag
       if (!hasForceFlag) {
-        const confirmed = confirm(`Delete '${filename}'?`);
-        if (!confirmed) {
-          app.printLine('Deletion cancelled.', 'hint');
-          return;
-        }
+        app.printLine(`rm: remove '${filename}'? Use "rm -f ${filename}" to confirm.`, 'hint');
+        return;
       }
 
       // Delete the file
