@@ -7,6 +7,12 @@ import { registerThemePlugin } from './plugins/theme';
 import { SoundManager } from './core/sound-manager';
 import { registerSoundPlugin } from './plugins/sound';
 import { runBootSequence } from './core/boot-sequence';
+import { FileSystem } from './core/file-system';
+import { registerTextEditor } from './plugins/text-editor';
+import { ManPageRegistry } from './core/man-registry';
+import { registerManCommand } from './plugins/man';
+import { registerFileCommands } from './plugins/file-commands';
+import { loadManPages } from './core/man-page-loader';
 
 /**
  * Main entry point
@@ -18,16 +24,28 @@ async function init(): Promise<void> {
   // Create sound manager
   const soundManager = new SoundManager();
   
+  // Create file system
+  const fileSystem = new FileSystem();
+  
+  // Create man page registry
+  const manRegistry = new ManPageRegistry();
+  
+  // Auto-load all man pages from markdown files
+  await loadManPages(manRegistry);
+  
   // Create terminal app with sound manager
   const app = new TerminalApp(soundManager);
   
-  // Register core commands
-  registerCoreCommands(app);
+  // Register core commands (with man pages)
+  registerCoreCommands(app, manRegistry);
   
-  // Register plugins
-  registerSysInfoPlugin(app);
-  registerThemePlugin(app, themeManager);
-  registerSoundPlugin(app, soundManager);
+  // Register plugins (with man pages)
+  registerSysInfoPlugin(app, manRegistry);
+  registerThemePlugin(app, themeManager, manRegistry);
+  registerSoundPlugin(app, soundManager, manRegistry);
+  registerTextEditor(app, fileSystem, manRegistry);
+  registerFileCommands(app, fileSystem, manRegistry);
+  registerManCommand(app, manRegistry);
   
   // Initialize terminal
   app.init();
@@ -42,4 +60,3 @@ if (document.readyState === 'loading') {
 } else {
   init();
 }
-

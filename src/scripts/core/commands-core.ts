@@ -1,10 +1,11 @@
 import { TerminalApp } from './terminal-app';
 import { runBootSequence } from './boot-sequence';
+import type { ManPageRegistry } from './man-registry';
 
 /**
  * Register core built-in commands
  */
-export function registerCoreCommands(app: TerminalApp): void {
+export function registerCoreCommands(app: TerminalApp, _manRegistry: ManPageRegistry): void {
   // help command
   app.registerCommand(
     'help',
@@ -83,4 +84,3 @@ export function registerCoreCommands(app: TerminalApp): void {
     }
   );
 }
-
