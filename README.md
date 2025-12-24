@@ -7,7 +7,7 @@ This project aims to recreate the nostalgic feeling of interacting with an old m
 
 ---
 
-## 🚀 Project Goals
+## Project Goals
 
 ### 1. **Nostalgic Terminal Experience**
 - Green on black CRT-like interface  
@@ -48,7 +48,7 @@ Plugins are pure functions that take `app` and register new commands.
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
 .
@@ -74,7 +74,7 @@ Plugins are pure functions that take `app` and register new commands.
 
 ---
 
-## 🧠 Architecture Philosophy
+## Architecture Philosophy
 
 ### 1. Single Source of Truth for Terminal
 Everything goes through `TerminalApp`.  
@@ -103,26 +103,4 @@ New features plug in cleanly:
 ```ts
 registerMyPlugin(app);
 ```
-
----
-
-## 🔮 Future Scope
-
-### Core Enhancements
-- Themes  
-- Boot sequence  
-- ASCII logo generator  
-- Aliases  
-
-### Advanced Plugins
-- Text adventure engine  
-- Hacker simulation  
-- D&D assistant tools  
-- Productivity suite  
-
----
-
-## ❤️ Personal Motivation
-
-A nostalgic and extensible micro-OS built with clean architecture and minimal tooling.
 
