@@ -133,6 +133,41 @@ export class TerminalApp {
   }
 
   /**
+   * Get terminal width in characters
+   * Calculates based on output element width and font size
+   */
+  public getTerminalWidth(): number {
+    if (!this.outputElement) {
+      return 80; // Default fallback
+    }
+
+    try {
+      // Get the computed width of the output element
+      const computedStyle = window.getComputedStyle(this.outputElement);
+      const width = parseFloat(computedStyle.width);
+      
+      // Get the font size to calculate character width
+      const fontSize = parseFloat(computedStyle.fontSize);
+      
+      // Monospace fonts are typically ~0.6 times the font size in width
+      // This is an approximation that works well for most monospace fonts
+      const charWidth = fontSize * 0.6;
+      
+      // Calculate approximate characters that fit
+      // Subtract some padding to account for scrollbar and margins
+      const padding = 20;
+      const availableWidth = width - padding;
+      const charactersPerLine = Math.floor(availableWidth / charWidth);
+      
+      // Ensure a reasonable minimum and maximum
+      return Math.max(40, Math.min(charactersPerLine, 200));
+    } catch (error) {
+      // Fallback to 80 if calculation fails
+      return 80;
+    }
+  }
+
+  /**
    * Enable user input
    */
   public enableInput(): void {
