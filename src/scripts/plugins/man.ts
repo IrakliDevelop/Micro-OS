@@ -88,7 +88,7 @@ function showBriefManPage(app: TerminalApp, page: any): void {
   
   app.printLine(`DESCRIPTION`, 'section-header');
   // Wrap description text
-  const descLines = wrapText(page.description, 4);
+  const descLines = wrapText(page.description, 4, app);
   descLines.forEach(line => app.printLine(line));
   app.printLine('');
 
@@ -118,13 +118,13 @@ function showDetailedManPage(app: TerminalApp, page: any): void {
   app.printLine('');
   
   app.printLine(`DESCRIPTION`, 'section-header');
-  const descLines = wrapText(page.description, 4);
+  const descLines = wrapText(page.description, 4, app);
   descLines.forEach(line => app.printLine(line));
   app.printLine('');
 
   // Show detailed documentation
   app.printLine(`DETAILED INFORMATION`, 'section-header');
-  const detailedLines = wrapText(page.detailed, 4);
+  const detailedLines = wrapText(page.detailed, 4, app);
   detailedLines.forEach(line => app.printLine(line));
   app.printLine('');
 
@@ -140,10 +140,14 @@ function showDetailedManPage(app: TerminalApp, page: any): void {
 /**
  * Wrap text to fit terminal width
  * Adds indent spaces at the beginning of each line
+ * Dynamically determines line width based on terminal size
  */
-function wrapText(text: string, indent: number = 0): string[] {
+function wrapText(text: string, indent: number = 0, app: TerminalApp): string[] {
   const indentStr = ' '.repeat(indent);
   const lines: string[] = [];
+  
+  // Get terminal width dynamically
+  const terminalWidth = app.getTerminalWidth();
   
   // Split by explicit newlines first
   const paragraphs = text.split('\n');
@@ -158,7 +162,7 @@ function wrapText(text: string, indent: number = 0): string[] {
     let currentLine = indentStr;
 
     words.forEach(word => {
-      if (currentLine.length + word.length + 1 > 80) {
+      if (currentLine.length + word.length + 1 > terminalWidth) {
         lines.push(currentLine);
         currentLine = indentStr + word;
       } else {
