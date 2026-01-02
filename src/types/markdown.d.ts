@@ -7,13 +7,13 @@ declare module '*.md' {
 // Type declaration for webpack's require.context
 interface RequireContext {
   keys(): string[];
-  <T>(id: string): T;
+  (id: string): { default: string };
   resolve(id: string): string;
   id: string;
 }
 
 declare global {
-  const require: {
+  const require: NodeRequire & {
     context(
       directory: string,
       useSubdirectories?: boolean,
