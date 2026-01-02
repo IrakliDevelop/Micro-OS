@@ -12,12 +12,16 @@ interface RequireContext {
   id: string;
 }
 
-declare var require: {
-  context(
-    directory: string,
-    useSubdirectories?: boolean,
-    regExp?: RegExp,
-    mode?: 'sync' | 'eager' | 'weak' | 'lazy' | 'lazy-once'
-  ): RequireContext;
-};
+declare global {
+  const require: {
+    context(
+      directory: string,
+      useSubdirectories?: boolean,
+      regExp?: RegExp,
+      mode?: 'sync' | 'eager' | 'weak' | 'lazy' | 'lazy-once'
+    ): RequireContext;
+  };
+}
+
+export {};
 

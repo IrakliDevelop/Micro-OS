@@ -122,7 +122,7 @@ export function loadManPages(manRegistry: ManPageRegistry): void {
   // Parse and register each man page
   for (const key of manPagesContext.keys()) {
     try {
-      const content = manPagesContext<{ default: string }>(key).default;
+      const content = (manPagesContext(key) as any).default as string;
       const manPage = parseMarkdownManPage(content);
       manRegistry.registerManPage(manPage);
     } catch (error) {
