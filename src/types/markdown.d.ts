@@ -4,3 +4,21 @@ declare module '*.md' {
   export default content;
 }
 
+// Type declaration for webpack's require.context
+interface RequireContext {
+  keys(): string[];
+  (id: string): string;
+  <T>(id: string): T;
+  resolve(id: string): string;
+  id: string;
+}
+
+declare var require: {
+  context(
+    directory: string,
+    useSubdirectories?: boolean,
+    regExp?: RegExp,
+    mode?: 'sync' | 'eager' | 'weak' | 'lazy' | 'lazy-once'
+  ): RequireContext;
+};
+
