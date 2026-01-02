@@ -7,7 +7,6 @@ declare module '*.md' {
 // Type declaration for webpack's require.context
 interface RequireContext {
   keys(): string[];
-  (id: string): string;
   <T>(id: string): T;
   resolve(id: string): string;
   id: string;
