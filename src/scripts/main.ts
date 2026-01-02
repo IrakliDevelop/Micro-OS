@@ -31,7 +31,7 @@ async function init(): Promise<void> {
   const manRegistry = new ManPageRegistry();
   
   // Auto-load all man pages from markdown files
-  await loadManPages(manRegistry);
+  loadManPages(manRegistry);
   
   // Create terminal app with sound manager
   const app = new TerminalApp(soundManager);

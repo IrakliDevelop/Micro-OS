@@ -114,33 +114,19 @@ function parseMarkdownManPage(content: string): ManPage {
 /**
  * Load all man pages from the man-pages directory
  */
-export async function loadManPages(manRegistry: ManPageRegistry): Promise<void> {
-  // Import all markdown files
-  // Note: These will be bundled at build time by webpack
-  const manPageFiles: Record<string, string> = {
-    'edit': (await import('../man-pages/edit.md')).default,
-    'vim': (await import('../man-pages/vim.md')).default,
-    'vi': (await import('../man-pages/vi.md')).default,
-    'ls': (await import('../man-pages/ls.md')).default,
-    'cat': (await import('../man-pages/cat.md')).default,
-    'rm': (await import('../man-pages/rm.md')).default,
-    'man': (await import('../man-pages/man.md')).default,
-    'help': (await import('../man-pages/help.md')).default,
-    'clear': (await import('../man-pages/clear.md')).default,
-    'history': (await import('../man-pages/history.md')).default,
-    'echo': (await import('../man-pages/echo.md')).default,
-    'boot': (await import('../man-pages/boot.md')).default,
-    'sysinfo': (await import('../man-pages/sysinfo.md')).default,
-    'theme': (await import('../man-pages/theme.md')).default,
-    'sound': (await import('../man-pages/sound.md')).default,
-  };
+export function loadManPages(manRegistry: ManPageRegistry): void {
+  // Use webpack's require.context to dynamically import all .md files
+  // This allows adding new man pages without code changes
+  const manPagesContext = require.context('../man-pages', false, /\.md$/);
   
   // Parse and register each man page
-  for (const [filename, content] of Object.entries(manPageFiles)) {
+  for (const key of manPagesContext.keys()) {
     try {
+      const content = manPagesContext(key).default;
       const manPage = parseMarkdownManPage(content);
       manRegistry.registerManPage(manPage);
     } catch (error) {
+      const filename = key.replace(/^\.\//, '').replace(/\.md$/, '');
       console.error(`Error loading man page ${filename}:`, error);
     }
   }
