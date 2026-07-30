@@ -1,10 +1,15 @@
 import { TerminalApp } from '../core/terminal-app';
 import { ThemeManager } from '../core/theme-manager';
+import type { ManPageRegistry } from '../core/man-registry';
 
 /**
  * Register theme plugin
  */
-export function registerThemePlugin(app: TerminalApp, themeManager: ThemeManager): void {
+export function registerThemePlugin(
+  app: TerminalApp, 
+  themeManager: ThemeManager,
+  _manRegistry: ManPageRegistry
+): void {
   app.registerCommand(
     'theme',
     'Manage terminal themes',

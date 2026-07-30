@@ -39,6 +39,10 @@ module.exports = {
             }
           }
         ]
+      },
+      {
+        test: /\.md$/,
+        type: 'asset/source'
       }
     ]
   },
@@ -53,7 +57,7 @@ module.exports = {
       directory: path.join(__dirname, 'dist')
     },
     compress: true,
-    port: 3000,
+    port: 3001,
     hot: true,
     open: true
   }

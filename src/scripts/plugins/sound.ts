@@ -1,10 +1,15 @@
 import { TerminalApp } from '../core/terminal-app';
 import { SoundManager } from '../core/sound-manager';
+import type { ManPageRegistry } from '../core/man-registry';
 
 /**
  * Register sound plugin
  */
-export function registerSoundPlugin(app: TerminalApp, soundManager: SoundManager): void {
+export function registerSoundPlugin(
+  app: TerminalApp, 
+  soundManager: SoundManager,
+  _manRegistry: ManPageRegistry
+): void {
   // sound command - manage sound settings
   app.registerCommand(
     'sound',

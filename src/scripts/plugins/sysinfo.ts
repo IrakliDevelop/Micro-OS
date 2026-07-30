@@ -1,9 +1,10 @@
 import { TerminalApp } from '../core/terminal-app';
+import type { ManPageRegistry } from '../core/man-registry';
 
 /**
  * Register system information plugin
  */
-export function registerSysInfoPlugin(app: TerminalApp): void {
+export function registerSysInfoPlugin(app: TerminalApp, _manRegistry: ManPageRegistry): void {
   app.registerCommand(
     'sysinfo',
     'Display system information',
@@ -68,4 +69,3 @@ function getBrowserName(): string {
   
   return 'Unknown Browser';
 }
-
